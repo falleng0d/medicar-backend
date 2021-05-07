@@ -18,7 +18,7 @@ from appointment import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register('appointment', views.AppointmentViewSet)
+# router.register('appointment', views.AppointmentViewSet)
 
 app_name = 'appointment'
 
