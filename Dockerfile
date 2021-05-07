@@ -3,7 +3,6 @@ LABEL maitainer = "Mateus Junior"
 
 ENV PYTHONUNBUFFERED 1
 
-
 COPY ./requirements.txt /requirements.txt
 RUN apk add --update --no-cache postgresql-client jpeg-dev
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
@@ -17,4 +16,5 @@ COPY ./app /app
 RUN adduser -D user
 USER user
 
+ENV LISTEN_PORT=8000
 EXPOSE 8000
