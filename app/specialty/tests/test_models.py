@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from core import models
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
 from specialty.serializers import SpecialtySerializer
 
 SPECIALTY_URL = reverse('specialty:specialty-list')
@@ -41,7 +42,27 @@ def sample_user(username='test', password='testpass'):
 	return get_user_model().objects.create_user(username, password)
 
 
-class ModelTests(TestCase):
+class PublicApiTests(TestCase):
+	"""Test unauthenticated recipe API access"""
+
+	def setUp(self):
+		self.client = APIClient()
+
+	def test_auth_required(self):
+		"""Test that authentication is required"""
+		res = self.client.get(SPECIALTY_URL)
+
+		self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateApiTests(TestCase):
+	"""Test unauthenticated recipe API access"""
+
+	def setUp(self):
+		self.client = APIClient()
+		self.user = sample_user()
+		self.client.force_authenticate(self.user)
+
 	@classmethod
 	def setUpTestData(cls):
 		for s in SAMPLE_SPECIALTY_LIST:
@@ -76,35 +97,3 @@ class ModelTests(TestCase):
 		self.assertQuerysetEqual(queryset, [SAMPLE_SPECIALTY_RESPONSE[1]['nome']],
 		                         transform=lambda x: x.nome)
 		self.assertEqual(queryset.count(), 1)
-
-	@unittest.skip('just an test sample')
-	def test_tag_str(self):
-		"""Test the tag string representation"""
-		tag = models.Tag.objects.create(
-			user=sample_user(),
-			name='Vegan'
-		)
-
-		self.assertEqual(str(tag), tag.name)
-
-	@unittest.skip('just an test sample')
-	def test_ingredient_str(self):
-		"""Test the ingredient string respresentation"""
-		ingredient = models.Ingredient.objects.create(
-			user=sample_user(),
-			name='Cucumber'
-		)
-
-		self.assertEqual(str(ingredient), ingredient.name)
-
-	@unittest.skip('just an test sample')
-	def test_recipe_str(self):
-		"""Test the recipe string representation"""
-		recipe = models.Recipe.objects.create(
-			user=sample_user(),
-			title='Steak and mushroom sauce',
-			time_minutes=5,
-			price=5.00
-		)
-
-		self.assertEqual(str(recipe), recipe.title)

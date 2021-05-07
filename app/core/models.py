@@ -33,7 +33,7 @@ class Medic(models.Model):
 # Médico: Médico que será alocado (obrigatório) Dia: Data de alocação do médico (obrigatório)
 # Horários: Lista de horários na qual o médico deverá ser alocado para o dia especificado (
 # obrigatório)
-class DaySchedule(models.Model):
+class Schedule(models.Model):
     dia = models.DateField(auto_created=True)
     medico = models.ForeignKey(Medic, on_delete=CASCADE, unique_for_date=dia)
 
@@ -43,7 +43,7 @@ class DaySchedule(models.Model):
 # Horários: Lista de horários na qual o médico deverá ser alocado para o
 # dia especificado (obrigatório)
 class DayScheduleTime(models.Model):
-    agenda = models.ForeignKey(DaySchedule, on_delete=CASCADE)
+    agenda = models.ForeignKey(Schedule, on_delete=CASCADE)
     horario = models.CharField(max_length=5)
 
 

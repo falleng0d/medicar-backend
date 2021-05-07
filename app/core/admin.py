@@ -5,4 +5,4 @@ from django.contrib import admin
 admin.site.register(models.Specialty)
 admin.site.register(models.Medic)
 admin.site.register(models.Appointment)
-admin.site.register(models.DaySchedule)
+admin.site.register(models.Schedule)
