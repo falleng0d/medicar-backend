@@ -1,13 +1,9 @@
 # Create your views here.
-from specialty.serializers import SpecialtySerializer
-from rest_framework import generics, viewsets
-
 from core.models import Specialty
-
-
-class SpecialtyListView(generics.ListCreateAPIView):
-	queryset = Specialty.objects.all()
-	serializer_class = SpecialtySerializer
+from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from specialty.serializers import SpecialtySerializer
 
 
 class SpecialtyViewSet(viewsets.ModelViewSet):
@@ -16,3 +12,5 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
 	"""
 	queryset = Specialty.objects.all()
 	serializer_class = SpecialtySerializer
+	authentication_classes = [TokenAuthentication]
+	permission_classes = [IsAuthenticated]
