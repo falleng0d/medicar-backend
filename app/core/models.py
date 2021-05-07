@@ -6,7 +6,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 class Specialty(models.Model):
-	nome = models.CharField(max_length=60)
+    nome = models.CharField(max_length=60)
 
 
 # Deve ser possível cadastrar os médicos que podem atender na clínica fornecendo as seguintes
@@ -18,13 +18,13 @@ class Specialty(models.Model):
 # Telefone: Telefone do médico
 # Especialidade: Especialidade na qual o médico atende
 class Medic(models.Model):
-	nome = models.CharField(max_length=255)
-	crm = models.IntegerField(unique=True)
-	email = models.EmailField(blank=True)
-	telefone = PhoneNumberField(region='BR', blank=True)
-	especialidade = models.ForeignKey(Specialty,
-	                                  on_delete=models.deletion.SET_NULL,
-	                                  null=True)
+    nome = models.CharField(max_length=255)
+    crm = models.IntegerField(unique=True)
+    email = models.EmailField(blank=True)
+    telefone = PhoneNumberField(region='BR', blank=True)
+    especialidade = models.ForeignKey(Specialty,
+                                      on_delete=models.deletion.SET_NULL,
+                                      null=True)
 
 
 # Deve ser possível criar uma agenda para um médico em um dia específico
@@ -34,8 +34,8 @@ class Medic(models.Model):
 # Horários: Lista de horários na qual o médico deverá ser alocado para o dia especificado (
 # obrigatório)
 class DaySchedule(models.Model):
-	dia = models.DateField(auto_created=True)
-	medico = models.ForeignKey(Medic, on_delete=CASCADE, unique_for_date=dia)
+    dia = models.DateField(auto_created=True)
+    medico = models.ForeignKey(Medic, on_delete=CASCADE, unique_for_date=dia)
 
 
 # TODO: Não deve ser possível criar uma agenda para um médico em um dia passado
@@ -43,13 +43,13 @@ class DaySchedule(models.Model):
 # Horários: Lista de horários na qual o médico deverá ser alocado para o
 # dia especificado (obrigatório)
 class DayScheduleTime(models.Model):
-	agenda = models.ForeignKey(DaySchedule, on_delete=CASCADE)
-	horario = models.CharField(max_length=5)
+    agenda = models.ForeignKey(DaySchedule, on_delete=CASCADE)
+    horario = models.CharField(max_length=5)
 
 
 class Appointment(models.Model):
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	agendamento = models.ForeignKey(DayScheduleTime, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    agendamento = models.ForeignKey(DayScheduleTime, on_delete=models.CASCADE)
 
 # class Passenger(models.Model):
 #     firstName = models.CharField(max_length=20)

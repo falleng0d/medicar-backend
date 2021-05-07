@@ -1,7 +1,8 @@
-from .models import Specialty
+from core.models import Specialty
 from rest_framework import serializers
+
 
 class SpecialtySerializer(serializers.ModelSerializer):
     class Meta:
         model = Specialty
-        fields='__all__'
+        fields = '__all__'
