@@ -114,6 +114,8 @@ LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
+TIME_FORMAT = '%H:%M'
+
 USE_I18N = True
 
 USE_L10N = True

@@ -119,7 +119,7 @@ SAMPLE_POST_APPOINTMENT_RESPONSE = {
 	}
 }
 
-SCHEDULE_URL = reverse('schedule:schedule-list')
+SCHEDULE_URL = '/agenda/'
 MEDIC_URL = reverse('medic:medic-list')
 
 

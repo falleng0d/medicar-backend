@@ -1,9 +1,16 @@
+import json
+from datetime import datetime, date
+
 from core import models
+from core.models import ScheduleTime, Appointment, Schedule
 from core.tests.helpers import sample_user, SAMPLE_SPECIALTY_LIST, SAMPLE_MEDIC_RESPONSE, \
 	SCHEDULE_URL
+from django.core import management, serializers
 from django.test import TestCase
 from rest_framework import status
+from rest_framework.renderers import JSONRenderer
 from rest_framework.test import APIClient
+from schedule.serializers import ScheduleSerializer, ScheduleSerializer2
 
 
 class PublicApiTests(TestCase):
@@ -29,9 +36,61 @@ class PrivateApiTests(TestCase):
 
 	@classmethod
 	def setUpTestData(cls):
-		for s in SAMPLE_SPECIALTY_LIST:
-			models.Specialty.objects.create(nome=s)
-		sp = models.Specialty.objects.all()
-		for m in SAMPLE_MEDIC_RESPONSE:
-			models.Medic.objects.create(nome=m['nome'], crm=m['crm'],
-			                            especialidade=sp.get(nome=m['especialidade']["nome"]))
+		management.call_command('setup_test_data')
+
+	def test_schedules_are_ordered_descending_by_date(self):
+		pass
+
+	def test_schedules_format(self):
+		schedule = models.Schedule.objects.get(pk=1)
+
+		dataset = ScheduleSerializer(schedule)
+
+		res = self.client.get(SCHEDULE_URL)
+		print(res.content)
+
+	def test_format(self):
+		res = self.client.get(SCHEDULE_URL)
+		data = res.data
+		with open("res.json", "w") as writer:
+			dump = json.dumps(data)
+			writer.write(dump)
+
+	def test_no_empty_times(self):
+		res = self.client.get(SCHEDULE_URL)
+		for d in res.data:
+			if d.get('horarios') is not None:
+				self.assertTrue(len(d['horarios']) > 0)
+
+	def test_after_times(self):
+		res = self.client.get(SCHEDULE_URL)
+		data = res.data
+		for d in data:
+			dia = date.fromisoformat(d['dia'])
+			self.assertTrue(dia >= datetime.today().date())
+			if dia == datetime.today().date():
+				horarios = d['horarios']
+				for h in horarios:
+					horario = datetime.strptime(h, '%H:%M').time()
+					self.assertTrue(datetime.now().time() <= horario)
+
+	def test_hide_appointment(self):
+		schedule = Schedule.objects.order_by('-dia').filter(horarios__isnull=False)
+		time = schedule.first().horarios.first()
+
+		agendamento = Appointment(user=self.user, horario=time, 
+		                          data_agendamento=datetime.now()).save()
+
+		res = self.client.get(SCHEDULE_URL)
+		data = res.data
+
+		# objs = ScheduleTime.objects.filter(agendamento__isnull=False).all()
+
+		for d in data:
+			if d.get('dia') != time.agenda.dia.isoformat():
+				continue
+			if d.get('medico').get('id') != time.agenda.medico.id:
+				continue
+			for h in d.get('horarios'):
+				horario = datetime.strptime(h, '%H:%M').time()
+				self.assertTrue(time.horario != horario)

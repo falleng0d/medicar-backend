@@ -13,12 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path, include
-from medic import views
-from rest_framework import routers
+from django.urls import path
+from schedule import views
+
+# router = routers.DefaultRouter()
+# router.register('agenda', views.ScheduleViewSet)
 
 app_name = 'schedule'
 
 urlpatterns = [
-
+	path('agenda/', views.ScheduleList.as_view())
 ]
