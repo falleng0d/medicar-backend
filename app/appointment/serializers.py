@@ -18,7 +18,6 @@ class ScheduleTimeField(serializers.RelatedField):
 
 class AppointmentSerializer(serializers.ModelSerializer):
 	medico = MedicSerializer(read_only=True, source='horario.agenda.medico')
-	# horario = ScheduleTimeField(queryset=ScheduleTime)
 	horario = ScheduleTimeField(queryset=ScheduleTime)
 	dia = serializers.ReadOnlyField(source='horario.agenda.dia')
 

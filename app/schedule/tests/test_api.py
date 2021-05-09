@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from core import models
 from core.models import Appointment, Schedule
@@ -12,7 +12,7 @@ from schedule.serializers import ScheduleSerializer
 
 
 class PublicApiTests(TestCase):
-	"""Test unauthenticated recipe API access"""
+	"""Test unauthenticated schedule API access"""
 
 	def setUp(self):
 		self.client = APIClient()
@@ -25,7 +25,7 @@ class PublicApiTests(TestCase):
 
 
 class PrivateApiTests(TestCase):
-	"""Test unauthenticated recipe API access"""
+	"""Test unauthenticated schedule API access"""
 
 	def setUp(self):
 		self.client = APIClient()
@@ -37,7 +37,7 @@ class PrivateApiTests(TestCase):
 	def debug_data_dump(self):
 		res = self.client.get(SCHEDULE_URL)
 		data = res.data
-		with open("res.json", "w") as writer:
+		with open("schedule_sample.json", "w") as writer:
 			dump = json.dumps(data)
 			writer.write(dump)
 
@@ -45,21 +45,24 @@ class PrivateApiTests(TestCase):
 	def setUpTestData(cls):
 		management.call_command('setup_test_data')
 
-	def test_schedules_format(self):
-		schedule = models.Schedule.objects.get(pk=1)
+	def test_schedules_serializes_and_gets_successfully(self):
+		schedule = models.Schedule.objects.first()
+		ScheduleSerializer(schedule)
+		self.client.get(SCHEDULE_URL)
 
-		dataset = ScheduleSerializer(schedule)
+	def test_schedule_filters_successfuly(self):
+		"""Users should be able to filter the schedule data"""
+		today_str = datetime.now().date().isoformat()
+		nextweek_str = (datetime.now() + timedelta(days=7)).date().isoformat()
+		filtered_url = f'/agendas/?medico=4&especialidade=6&' \
+		         f'data_inicio={today_str}&data_final={nextweek_str}'
+		res=self.client.get(filtered_url)
+		self.assertEqual(res.status_code, status.HTTP_200_OK)
+		print(res.data)
 
-		res = self.client.get(SCHEDULE_URL)
-		print(res.content)
-
-	def test_no_empty_times(self):
-		res = self.client.get(SCHEDULE_URL)
-		for d in res.data:
-			if d.get('horarios') is not None:
-				self.assertTrue(len(d['horarios']) > 0)
-
-	def test_after_times(self):
+	def test_user_can_see_free_schedules(self):
+		"""Users should not be able to see schedule on dates/times that have already
+		passed"""
 		res = self.client.get(SCHEDULE_URL)
 		data = res.data
 		for d in data:
@@ -71,7 +74,8 @@ class PrivateApiTests(TestCase):
 					horario = datetime.strptime(h, '%H:%M').time()
 					self.assertTrue(datetime.now().time() <= horario)
 
-	def test_hide_appointment(self):
+	def test_user_can_see_free_schedule_times(self):
+		"""Users should not be able to see schedule times that have appointments"""
 		schedule = Schedule.objects.order_by('-dia').filter(horarios__isnull=False)
 		time = schedule.first().horarios.first()
 
@@ -79,11 +83,8 @@ class PrivateApiTests(TestCase):
 		            data_agendamento=datetime.now()).save()
 
 		res = self.client.get(SCHEDULE_URL)
-		data = res.data
 
-		# objs = ScheduleTime.objects.filter(agendamento__isnull=False).all()
-
-		for d in data:
+		for d in res.data:
 			if d.get('dia') != time.agenda.dia.isoformat():
 				continue
 			if d.get('medico').get('id') != time.agenda.medico.id:

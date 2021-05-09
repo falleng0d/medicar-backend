@@ -4,8 +4,12 @@ exclude =
   __pycache__,
   manage.py,
   settings.py
+  tests/*
+  env
+  venv
+  .pytest_cache
+
 ignore =
     # I prefer 100 chars lines
     E501
 max-line-length = 100
-exclude = tests/*

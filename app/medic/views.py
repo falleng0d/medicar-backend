@@ -1,15 +1,16 @@
 from core.models import Medic
 from medic.serializers import MedicSerializer
-from rest_framework import filters, viewsets
-
-# from django_filters import rest_framework as django_filters
+from rest_framework import filters, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import GenericViewSet
 
 
-class MedicViewSet(viewsets.ModelViewSet):
+class MedicViewSet(mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
 	"""
-	API endpoint that allows users to be viewed or edited.
+	API endpoint that allows medics to be viewed and searched by the API.
 	"""
 	queryset = Medic.objects.all()
 

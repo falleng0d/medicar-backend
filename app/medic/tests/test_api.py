@@ -20,7 +20,7 @@ class PublicApiTests(TestCase):
 
 
 class PrivateApiTests(TestCase):
-	"""Test unauthenticated recipe API access"""
+	"""Test unauthenticated medic API access"""
 
 	def setUp(self):
 		self.client = APIClient()
@@ -29,6 +29,7 @@ class PrivateApiTests(TestCase):
 
 	@classmethod
 	def setUpTestData(cls):
+		"""Sets up sample testing data using provided examples"""
 		for s in SAMPLE_SPECIALTY_LIST:
 			models.Specialty.objects.create(nome=s)
 		sp = models.Specialty.objects.all()
@@ -36,49 +37,36 @@ class PrivateApiTests(TestCase):
 			models.Medic.objects.create(nome=m['nome'], crm=m['crm'],
 			                            especialidade=sp.get(nome=m['especialidade']["nome"]))
 
-	def test_get_medic_list(self):
-		"""Test Requirement: Nome da especialidade (termo de pesquisa)"""
-		res = self.client.get(MEDIC_URL)
-		print(res.content)
-		serializer = MedicSerializer(res.data, many=True)
-		self.assertQuerysetEqual(serializer.data, SAMPLE_MEDIC_RESPONSE)
-
-	def test_create_medic(self):
-		"""T"""
-		medic_name = 'Gine'
-		res = self.client.post(MEDIC_URL, {'nome': medic_name, 'crm': 222222})
-
-		self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-		medic = models.Medic.objects.get(id=res.data['id'])
-		self.assertEqual(medic.nome, medic_name)
-
-	# Identificador de uma ou mais especialidades
-	# Nome do médico (termo de pesquisa)
-	# GET /medicos/?search=maria&especialidade=1&especialidade=3
 	def test_search_medic(self):
-		"""T"""
+		"""Users should be able to search for medics by name"""
 		sp = models.Specialty.objects.all()
-		medic = models.Medic.objects.create(nome='Maria', crm=222222,
-		                                    especialidade=sp.get(nome='Pediatria'))  # 2
+		s1 = sp.get(nome='Pediatria')
+		s2 = sp.get(nome='Cardiologia')
+		models.Medic.objects.create(nome='Maria', crm=222222,
+		                            especialidade=s1)  # 2
 		res = self.client.get('/medicos/?search=maria')
 		self.assertEqual(res.status_code, status.HTTP_200_OK)
-		self.assertEqual(len(res.data), 1)
+		self.assertGreaterEqual(len(res.data), 1)
+		self.assertContains(res, text='Maria')
 
-		res = self.client.get('/medicos/?search=maria&especialidade=2&especialidade=3')
+		res = self.client.get(f'/medicos/?search=maria&especialidade={s1.id}'
+		                      f'&especialidade={s2.id}')
 		self.assertEqual(res.status_code, status.HTTP_200_OK)
-		self.assertEqual(len(res.data), 1)
-		queryset1 = MedicSerializer(res.data, many=True)
-		queryset2 = MedicSerializer([medic], many=True)
-		self.assertQuerysetEqual(queryset1.data, queryset2.data)
+		self.assertGreaterEqual(len(res.data), 1)
+		queryset = MedicSerializer(models.Medic.objects.filter(especialidade__in=[s1.id, s2.id],
+		                                                       nome__icontains='maria'),
+		                                                       many=True)
+		self.assertQuerysetEqual(queryset.data, res.data)
 
 	def test_filter_medic_by_specialty(self):
-		"""T"""
+		"""Users should be able to filter medics by specialties"""
 		res = self.client.get('/medicos/?especialidade=3')
 		self.assertEqual(res.status_code, status.HTTP_200_OK)
-		self.assertEqual(len(res.data), 1)
+		queryset = MedicSerializer(models.Medic.objects.filter(especialidade=3), many=True)
+		self.assertQuerysetEqual(queryset.data, res.data)
 
 	def test_search_invalid_medic(self):
-		"""T"""
+		"""Invalid search should not return results"""
 		print('/medicos/?search=gregory&especialidade=1&especialidade=2')
 		res = self.client.get('/medicos/?search=gregory&especialidade=1&especialidade=2')
 		self.assertEqual(res.status_code, status.HTTP_200_OK)

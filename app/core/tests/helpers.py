@@ -121,19 +121,15 @@ SAMPLE_POST_APPOINTMENT_RESPONSE = {
 
 SAMPLE_SPECIALTY_RESPONSE = [
 	{
-		"id": 1,
 		"nome": "Pediatria"
 	},
 	{
-		"id": 2,
 		"nome": "Ginecologia"
 	},
 	{
-		"id": 3,
 		"nome": "Cardiologia"
 	},
 	{
-		"id": 4,
 		"nome": "Clínico Geral"
 	}
 ]
@@ -141,7 +137,7 @@ SAMPLE_SPECIALTY_RESPONSE = [
 
 SPECIALTY_URL = reverse('specialty:specialty-list')
 MEDIC_URL = reverse('medic:medic-list')
-SCHEDULE_URL = '/agenda/'
+SCHEDULE_URL = '/agendas/'
 APPOINTMENT_URL = '/consultas/'
 
 

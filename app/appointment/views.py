@@ -12,6 +12,10 @@ from rest_framework.views import APIView
 
 
 class AppointmentList(APIView):
+	"""
+	API endpoint that allows appointments to be viewed, added, and deleted by the API.
+	As per required, users can only view delete and add to its owned data
+	"""
 	authentication_classes = [TokenAuthentication]
 	permission_classes = [IsAuthenticated]
 

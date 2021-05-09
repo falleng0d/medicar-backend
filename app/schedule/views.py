@@ -2,7 +2,6 @@ from datetime import datetime
 
 from core.models import Schedule, ScheduleTime
 from django.db.models import Prefetch
-# Create your views here.
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -12,13 +11,16 @@ from rest_framework.views import APIView
 from schedule.serializers import ScheduleSerializer
 
 
-# Create your views here.
 class ScheduleList(APIView):
+	"""
+	API endpoint that allows the schedule(agenda) to be viewed by the API.
+	As per required, users can only view delete and add to its owned data
+	"""
 	authentication_classes = [TokenAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request):
-		schedule = self.get_queryset.order_by('dia')
+		schedule = self.queryset.order_by('dia')
 		serializer = ScheduleSerializer(schedule, many=True)
 		return Response(serializer.data)
 
@@ -30,7 +32,9 @@ class ScheduleList(APIView):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	@property
-	def get_queryset(self):
+	def queryset(self):
+		"""Users should not be able to see schedule on dates that have already
+		passed or that don't have any filter times"""
 		base_queryset = Schedule.objects.filter(dia__gte=datetime.today().date())
 		queryset = base_queryset.prefetch_related(Prefetch(
 			'horarios',
@@ -52,8 +56,8 @@ class ScheduleList(APIView):
 		final_date = self.request.query_params.get('data_final', default=None)
 
 		if initial_date:
-			queryset = queryset.filter(agenda__dia__gte=initial_date)
+			queryset = queryset.filter(dia__gte=initial_date)
 		if final_date:
-			queryset = queryset.filter(agenda__dia__lte=final_date)
+			queryset = queryset.filter(dia__lte=final_date)
 
 		return queryset
