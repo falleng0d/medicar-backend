@@ -1,16 +1,15 @@
 from datetime import datetime
 
 from core.models import Schedule, ScheduleTime
-
+from django.db.models import Prefetch
 # Create your views here.
 from django.db.models import Q
-from django.db.models import Prefetch
-from rest_framework import viewsets, filters, status
+from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from schedule.serializers import ScheduleSerializer, ScheduleSerializer2
+from schedule.serializers import ScheduleSerializer
 
 
 # Create your views here.
@@ -20,7 +19,7 @@ class ScheduleList(APIView):
 
 	def get(self, request):
 		schedule = self.get_queryset.order_by('dia')
-		serializer = ScheduleSerializer2(schedule, many=True)
+		serializer = ScheduleSerializer(schedule, many=True)
 		return Response(serializer.data)
 
 	def post(self, request):
@@ -40,9 +39,6 @@ class ScheduleList(APIView):
 			       Q(Q(agenda__dia__exact=datetime.now().date()) &
 			         Q(horario__gte=datetime.now().time()))))
 		))
-
-		# horario = datetime.now().time()
-		# datetime.strptime('x', '%H:%M').time()
 
 		specialty_ids = self.request.query_params.getlist('especialidade', default=None)
 		if specialty_ids:

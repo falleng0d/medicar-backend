@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 
 class PublicApiTests(TestCase):
-	"""Test unauthenticated recipe API access"""
+	"""Test unauthenticated medic API access"""
 
 	def setUp(self):
 		self.client = APIClient()

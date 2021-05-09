@@ -1,41 +1,10 @@
-from unittest.mock import patch
-import unittest
-
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-
 from core import models
-from django.urls import reverse
+from core.tests.helpers import SPECIALTY_URL, SAMPLE_SPECIALTY_LIST, SAMPLE_SPECIALTY_RESPONSE
+from django.contrib.auth import get_user_model
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 from specialty.serializers import SpecialtySerializer
-
-SPECIALTY_URL = reverse('specialty:specialty-list')
-SAMPLE_SPECIALTY_LIST = [
-	"Pediatria",
-	"Ginecologia",
-	"Cardiologia",
-	"Clínico Geral",
-]
-SAMPLE_SPECIALTY_RESPONSE = [
-	{
-		"id": 1,
-		"nome": "Pediatria"
-	},
-	{
-		"id": 2,
-		"nome": "Ginecologia"
-	},
-	{
-		"id": 3,
-		"nome": "Cardiologia"
-	},
-	{
-		"id": 4,
-		"nome": "Clínico Geral"
-	}
-]
-
 
 def sample_user(username='test', password='testpass'):
 	"""Create a sample user"""

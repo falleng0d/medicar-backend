@@ -119,10 +119,32 @@ SAMPLE_POST_APPOINTMENT_RESPONSE = {
 	}
 }
 
-SCHEDULE_URL = '/agenda/'
+SAMPLE_SPECIALTY_RESPONSE = [
+	{
+		"id": 1,
+		"nome": "Pediatria"
+	},
+	{
+		"id": 2,
+		"nome": "Ginecologia"
+	},
+	{
+		"id": 3,
+		"nome": "Cardiologia"
+	},
+	{
+		"id": 4,
+		"nome": "Clínico Geral"
+	}
+]
+
+
+SPECIALTY_URL = reverse('specialty:specialty-list')
 MEDIC_URL = reverse('medic:medic-list')
+SCHEDULE_URL = '/agenda/'
+APPOINTMENT_URL = '/consultas/'
 
 
 def sample_user(username='test', password='testpass'):
 	"""Create a sample user"""
-	return get_user_model().objects.create_user(username, password)
+	return get_user_model().objects.get_or_create(username=username, password=password)[0]

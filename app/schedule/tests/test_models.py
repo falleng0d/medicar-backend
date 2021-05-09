@@ -2,15 +2,13 @@ import json
 from datetime import datetime, date
 
 from core import models
-from core.models import ScheduleTime, Appointment, Schedule
-from core.tests.helpers import sample_user, SAMPLE_SPECIALTY_LIST, SAMPLE_MEDIC_RESPONSE, \
-	SCHEDULE_URL
-from django.core import management, serializers
+from core.models import Appointment, Schedule
+from core.tests.helpers import sample_user, SCHEDULE_URL
+from django.core import management
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.renderers import JSONRenderer
 from rest_framework.test import APIClient
-from schedule.serializers import ScheduleSerializer, ScheduleSerializer2
+from schedule.serializers import ScheduleSerializer
 
 
 class PublicApiTests(TestCase):
@@ -34,12 +32,18 @@ class PrivateApiTests(TestCase):
 		self.user = sample_user()
 		self.client.force_authenticate(self.user)
 
+		self.debug_data_dump()
+
+	def debug_data_dump(self):
+		res = self.client.get(SCHEDULE_URL)
+		data = res.data
+		with open("res.json", "w") as writer:
+			dump = json.dumps(data)
+			writer.write(dump)
+
 	@classmethod
 	def setUpTestData(cls):
 		management.call_command('setup_test_data')
-
-	def test_schedules_are_ordered_descending_by_date(self):
-		pass
 
 	def test_schedules_format(self):
 		schedule = models.Schedule.objects.get(pk=1)
@@ -48,13 +52,6 @@ class PrivateApiTests(TestCase):
 
 		res = self.client.get(SCHEDULE_URL)
 		print(res.content)
-
-	def test_format(self):
-		res = self.client.get(SCHEDULE_URL)
-		data = res.data
-		with open("res.json", "w") as writer:
-			dump = json.dumps(data)
-			writer.write(dump)
 
 	def test_no_empty_times(self):
 		res = self.client.get(SCHEDULE_URL)
@@ -78,8 +75,8 @@ class PrivateApiTests(TestCase):
 		schedule = Schedule.objects.order_by('-dia').filter(horarios__isnull=False)
 		time = schedule.first().horarios.first()
 
-		agendamento = Appointment(user=self.user, horario=time, 
-		                          data_agendamento=datetime.now()).save()
+		Appointment(user=self.user, horario=time,
+		            data_agendamento=datetime.now()).save()
 
 		res = self.client.get(SCHEDULE_URL)
 		data = res.data

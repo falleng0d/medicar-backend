@@ -7,3 +7,5 @@ exclude =
 ignore =
     # I prefer 100 chars lines
     E501
+max-line-length = 100
+exclude = tests/*

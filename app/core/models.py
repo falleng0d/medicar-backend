@@ -57,18 +57,6 @@ class Schedule(models.Model):
 	ordering = ['dia']
 
 
-# TODO: Não deve ser possível criar uma agenda para um médico em um dia passado
-class ScheduleTimeManager(models.Manager):
-	def get_queryset(self):
-		q = super().get_queryset().filter(Q(agenda__dia__exact=datetime.now().date()))
-		print(q.query)
-		return q
-	# Q(creator=owner) | Q(moderated=False)
-	# return super().get_queryset().filter(Q(agenda__dia__gt=datetime.now().date()) |
-	#                                      Q(Q(agenda__dia__exact=datetime.now().date()) &
-	#                                        Q(horario__gte=datetime.now().time())))
-
-
 # Horários: Lista de horários na qual o médico deverá ser alocado para o
 # dia especificado (obrigatório)
 class ScheduleTime(models.Model):
@@ -79,23 +67,9 @@ class ScheduleTime(models.Model):
 	class Meta:
 		unique_together = (("agenda", "horario"),)
 
-	objects = models.Manager()  # The default manager.
-	after_today = ScheduleTimeManager()
-
 
 class Appointment(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	horario = models.OneToOneField(ScheduleTime, on_delete=models.CASCADE,
 	                               null=True, related_name='agendamento')
-	data_agendamento = models.DateTimeField()
-
-# class Passenger(models.Model):
-#     firstName = models.CharField(max_length=20)
-#     lastName = models.CharField(max_length=20)
-#     middleName = models.CharField(max_length=20)
-#     email = models.CharField(max_length=20)
-#     phone = models.CharField(max_length=10)
-#
-# class Reservation(models.Model):
-#     flight = models.OneToOneField(Flight,on_delete=models.CASCADE)
-#     passenger = models.OneToOneField(Passenger,on_delete=models.CASCADE)
+	data_agendamento = models.DateTimeField(auto_now_add=True)
