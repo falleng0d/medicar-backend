@@ -7,8 +7,9 @@ The backend is a fully functioning REST API using:
  - Python
  - Django / Django-REST-Framework
  - Docker / Docker-Compose
- - Test Driven Development
- - Travis CI
+ - Test Driven Development using:
+     - Auto generated mock data with FactoryBoy
+     - Travis CI
 
 ## Getting started 🚀
 
@@ -71,4 +72,106 @@ curl --request GET \
   --header 'Authorization: Token 446ec085093a7d4e30456e5ba8f66dbf3825f6c6'
 ```
 
-🎇🎇🎇🎇
+## Projec Architeture
+
+![Architeture](./architeture.png)
+
+## Project Structure
+
+Simplified
+
+```
+.
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── app
+│  ├── app
+│  ├── appointment
+│  ├── core
+│  ├── manage.py
+│  ├── medic
+│  ├── schedule
+│  ├── specialty
+│  └── user
+├── architeture.png
+├── docker-compose.yml
+├── model.drawio
+└── requirements.txt
+```
+
+Expanded
+
+```
+.
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── app
+│   ├── app
+│   │   ├── asgi.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── appointment
+│   │   ├── apps.py
+│   │   ├── serializers.py
+│   │   ├── tests
+│   │   │   └── test_api.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── core
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── management
+│   │   │   └── commands
+│   │   │       ├── setup_test_data.py
+│   │   │       └── wait_for_db.py
+│   │   ├── migrations
+│   │   │   └── 0001_initial.py
+│   │   ├── models.py
+│   │   ├── tests
+│   │   │   ├── factories.py
+│   │   │   ├── helpers.py
+│   │   │   ├── test_auth.py
+│   │   │   └── test_commands.py
+│   │   └── utilities.py
+│   ├── manage.py
+│   ├── medic
+│   │   ├── apps.py
+│   │   ├── serializers.py
+│   │   ├── tests
+│   │   │   └── test_api.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── schedule
+│   │   ├── apps.py
+│   │   ├── serializers.py
+│   │   ├── tests
+│   │   │   └── test_api.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── specialty
+│   │   ├── apps.py
+│   │   ├── serializers.py
+│   │   ├── tests
+│   │   │   └── test_api.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   └── user
+│       ├── apps.py
+│       ├── serializers.py
+│       ├── tests
+│       │   └── test_api.py
+│       ├── urls.py
+│       └── views.py
+├── architeture.png
+├── docker-compose.yml
+├── model.drawio
+└── requirements.txt
+
+17 directories, 48 files
+
+```
+
+🎇🎇🎇🎇 
