@@ -19,6 +19,11 @@ class ScheduleSerializer(serializers.ModelSerializer):
     medico = MedicSerializer(read_only=True)
     horarios = ScheduleTimeField(many=True, queryset=ScheduleTime)
 
+    # def to_representation(self, result):
+    #     if len([(key, result[key]) for key in result if
+    #             key != 'horarios' or len(result[key]) > 0]):
+    #         return result
+
     class Meta:
         model = Schedule
-        fields = ['medico', 'dia', 'horarios']
+        fields = ['id', 'medico', 'dia', 'horarios']

@@ -33,7 +33,19 @@ class SpecialtyAdmin(admin.ModelAdmin):
     list_display = ('nome',)
 
 
-admin.site.register(models.Appointment)
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'horario_consulta', 'usuario',)
+
+    @admin.display(ordering='id')
+    def horario_consulta(self, obj):
+        return obj.horario.horario
+
+    @admin.display(ordering='id')
+    def usuario(self, obj):
+        return obj.user.username
+
+
+admin.site.register(models.Appointment, AppointmentAdmin)
 admin.site.register(models.Schedule, ScheduleAdmin)
 admin.site.register(models.Medic, MedicAdmin)
 admin.site.register(models.Specialty, SpecialtyAdmin)

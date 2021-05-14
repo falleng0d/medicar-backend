@@ -14,7 +14,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 #   em outros projetos
 
 class Specialty(models.Model):
-    nome = models.ChaField(max_length=60)
+    nome = models.CharField(max_length=60)
 
     class Meta:
         verbose_name = 'Especialidade'
