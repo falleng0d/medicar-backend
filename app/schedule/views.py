@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from core.models import Schedule, ScheduleTime
-from django.db.models import Prefetch
+from django.db.models import Exists, OuterRef, Prefetch
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -33,16 +33,23 @@ class ScheduleList(APIView):
     def queryset(self):
         """Users should not be able to see schedule on dates that have already
         passed or that don't have any filter times"""
+
         base_queryset = Schedule.objects.filter(dia__gte=datetime.today().date())
+
+        schedule_times = ScheduleTime.objects.filter(Q(agendamento__isnull=True)
+                                                     & (Q(agenda__dia__gt=datetime.now().date())
+                                                        | Q(
+                    Q(agenda__dia__exact=datetime.now().date())
+                    & Q(horario__gte=datetime.now().time()))))
 
         # Prefetch valid ScheduleTime objects
         queryset = base_queryset.prefetch_related(Prefetch(
             'horarios',
-            ScheduleTime.objects.filter(Q(agendamento__isnull=True)
-                                        & (Q(agenda__dia__gt=datetime.now().date())
-                                           | Q(Q(agenda__dia__exact=datetime.now().date())
-                                               & Q(horario__gte=datetime.now().time()))))
+            ScheduleTime.objects.filter(id__in=schedule_times)
         ))
+
+        queryset = queryset.filter(Exists(ScheduleTime.objects.filter(agenda=OuterRef('pk'),
+                                                                      id__in=schedule_times)))
 
         specialty_ids = self.request.query_params.getlist('especialidade', default=None)
         if specialty_ids:
