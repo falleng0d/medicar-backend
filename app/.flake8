@@ -12,5 +12,6 @@ exclude =
 ignore =
     # I prefer 100 chars lines
     E501,
-    W503
+    W503,
+    E122
 max-line-length = 100
