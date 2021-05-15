@@ -1,1 +1,2 @@
-web: gunicorn app/app.wsgi
+release: ./release.sh
+web: cd app && gunicorn app.wsgi
