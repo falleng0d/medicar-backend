@@ -13,6 +13,12 @@ The backend is a fully functioning REST API using:
 
 ## Getting started 🚀
 
+### Remote
+The api is already deployed to Heroku and is available at [https://medicar-api.herokuapp.com](https://medicar-api.herokuapp.com).
+
+The deployment setup is included on the repository
+
+### Local
 To start project, run:
 
 ```
