@@ -22,10 +22,7 @@ services:
              python manage.py createsuperuser --noinput 2&>/dev/null | echo &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
-      - DB_HOST=db
-      - DB_NAME=app
-      - DB_USER=postgres
-      - DB_PASS=supersecretpassword
+      - DATABASE_URL=postgresql://postgres:supersecretpassword@db:5432/app
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=999999
       - DJANGO_SUPERUSER_EMAIL=admin@gmail.com
