@@ -65,3 +65,4 @@ class Appointment(models.Model):
 
     class Meta:
         verbose_name = 'Consulta'
+
