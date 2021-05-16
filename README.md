@@ -10,6 +10,7 @@ The backend is a fully functioning REST API using:
  - Test Driven Development using:
      - Auto generated mock data with FactoryBoy
      - Travis CI
+ - Heroku-ready
 
 ## Getting started 🚀
 
@@ -22,7 +23,7 @@ The deployment setup is included on the repository
 To start project, run:
 
 ```
-cd medicar_api
+cd backend
 docker-compose up
 ```
 
