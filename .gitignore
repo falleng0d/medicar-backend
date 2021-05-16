@@ -371,4 +371,5 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 .idea/sonarlint
+.idea/sonarlint/*
 .idea/highlightedFiles.xml
