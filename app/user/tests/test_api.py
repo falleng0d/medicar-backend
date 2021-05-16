@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse('user:register')
+GET_USER_URL = reverse('user:user')
 TOKEN_URL = reverse('api_token_auth')
 
 
@@ -62,6 +63,22 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_user_api(self):
+        """Test creating a user that already exists fails"""
+        payload = {
+            'username': 'testuser',
+            'password': 'testpass',
+            'email': 'testuser@aaa.com',
+            'first_name': 'test'
+        }
+        user = create_user(**payload)
+
+        self.client.force_authenticate(user)
+        res = self.client.get(GET_USER_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('first_name', res.data)
 
     def test_create_token_for_user(self):
         """Test that a token is created for the user"""
