@@ -2,7 +2,7 @@
 
 Backend source code for the Intmed's Medicar challenge
 
-The backend is a fully functioning REST API using:
+The backend is a fully functioning production-ready REST API using:
 
  - Python
  - Django / Django-REST-Framework
@@ -11,6 +11,7 @@ The backend is a fully functioning REST API using:
      - Auto generated mock data with FactoryBoy
      - Travis CI
  - Heroku-ready
+ - flake8 linting
 
 ## Getting started 🚀
 
