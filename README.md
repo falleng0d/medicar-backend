@@ -1,6 +1,6 @@
 # Medicar API
 
-Backend source code for the Intmed's Medicar challenge
+Backend source code for the Medicar challenge
 
 The backend is a fully functioning production-ready REST API using:
 
